@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pv-shared
+  labels:
+    app: pv-shared
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pv-shared
+  template:
+    metadata:
+      labels:
+        app: pv-shared
+    spec:
+      volumes:
+        - name: pv-storage
+          persistentVolumeClaim:
+            claimName: local-pvc
+      containers:
+        - name: busybox
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              i=0
+              while true; do
+                echo "$(date -Iseconds) pv message #$i" >> /data/data.log
+                i=$((i + 1))
+                sleep 5
+              done
+          volumeMounts:
+            - name: pv-storage
+              mountPath: /data
+        - name: multitool
+          image: wbitt/network-multitool
+          env:
+            - name: HTTP_PORT
+              value: "8080"
+            - name: HTTPS_PORT
+              value: "8443"
+          volumeMounts:
+            - name: pv-storage
+              mountPath: /data

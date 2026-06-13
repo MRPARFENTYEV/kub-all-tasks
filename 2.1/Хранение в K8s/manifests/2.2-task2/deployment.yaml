@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-multitool
+  labels:
+    app: nfs-multitool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-multitool
+  template:
+    metadata:
+      labels:
+        app: nfs-multitool
+    spec:
+      volumes:
+        - name: nfs-storage
+          persistentVolumeClaim:
+            claimName: nfs-pvc
+      containers:
+        - name: multitool
+          image: wbitt/network-multitool
+          env:
+            - name: HTTP_PORT
+              value: "8080"
+            - name: HTTPS_PORT
+              value: "8443"
+          command:
+            - sh
+            - -c
+            - sleep infinity
+          volumeMounts:
+            - name: nfs-storage
+              mountPath: /nfs-data
