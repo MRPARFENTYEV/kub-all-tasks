@@ -1,0 +1,24 @@
+# Deployment без ConfigMap: nginx и multitool конфликтуют за порт 80.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-multitool-broken
+  labels:
+    app: nginx-multitool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-multitool
+  template:
+    metadata:
+      labels:
+        app: nginx-multitool
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27
+          ports:
+            - containerPort: 80
+        - name: multitool
+          image: wbitt/network-multitool
