@@ -1,0 +1,6 @@
+frontend:
+  image:
+    tag: "1.27"
+backend:
+  image:
+    tag: latest
